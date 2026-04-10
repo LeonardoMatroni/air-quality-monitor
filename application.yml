@@ -1,0 +1,107 @@
+spring:
+  application:
+    name: air-quality-monitor
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/air_quality_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: public
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:alerts@escola.com.br}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Configurações do sistema AQI
+air-quality:
+  aqi:
+    check-interval-ms: 60000       # checar sensores a cada 1 min
+    report-cron: "0 0 7 * * MON-FRI"  # relatório diário às 7h em dias letivos
+    data-retention-days: 365       # manter histórico por 1 ano
+  thresholds:
+    co2:
+      good: 800          # ppm
+      moderate: 1000
+      unhealthy-sensitive: 1500
+      unhealthy: 2000
+      hazardous: 5000
+    pm25:
+      good: 12.0         # µg/m³
+      moderate: 35.4
+      unhealthy-sensitive: 55.4
+      unhealthy: 150.4
+      hazardous: 250.4
+    pm10:
+      good: 54.0
+      moderate: 154.0
+      unhealthy-sensitive: 254.0
+      unhealthy: 354.0
+      hazardous: 424.0
+    tvoc:
+      good: 0.3          # mg/m³
+      moderate: 1.0
+      unhealthy-sensitive: 3.0
+      unhealthy: 10.0
+      hazardous: 25.0
+    temperature:
+      min-comfortable: 18.0   # °C
+      max-comfortable: 26.0
+    humidity:
+      min-comfortable: 30.0   # %
+      max-comfortable: 70.0
+
+jwt:
+  secret: ${JWT_SECRET:change-this-secret-in-production-with-at-least-256-bits}
+  expiration-ms: 86400000   # 24 horas
+
+logging:
+  level:
+    br.com.escola: DEBUG
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
