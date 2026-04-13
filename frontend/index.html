@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Qualidade do Ar - GitNet</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="top-nav-container">
+        <nav class="navbar-main">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="images/logogitnet.png" alt="GitNet Logo">
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="active">Home</a>
+                    <a href="poluentes.html">Poluentes</a>
+                    <a href="saude.html">Saúde</a>
+                    <a href="planeta.html">Planeta</a>
+                    <a href="melhorar.html">Como Melhorar</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="dashboard">
+        <section class="page-header">
+            <div class="breadcrumbs">MUNDO / BRASIL / SÃO PAULO</div>
+            <h1>Qualidade do ar em <span class="highlight" id="school-name">Carregando...</span></h1>
+            <div class="timestamp" id="timestamp">--</div>
+        </section>
+        <section class="top-cards">
+            <div class="card weather-hero-card">
+                <div class="hero-content">
+                    <div class="aqi-badge">Índice AQI: <span id="aqi-value">--</span></div>
+                    <h2 class="status-title" id="aqi-category">--</h2>
+                    <p class="pollutant-info">Sala: <strong id="room-name">--</strong></p>
+                </div>
+                <div class="hero-temp">
+                    <h1 id="temperature">--°C</h1>
+                    <div class="temp-details">
+                        <span>💧 <span id="humidity">--%</span></span>
+                        <span>CO₂ <span id="co2-mini">-- ppm</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card healthy-air-card">
+                <div class="smile-icon" id="aqi-icon">⏳</div>
+                <p class="status-label" id="aqi-status">CARREGANDO...</p>
+            </div>
+        </section>
+        <section class="bottom-grid">
+            <div class="card pollutants-card">
+                <h3>POLUENTES DO AR</h3>
+                <div class="pollutants-grid">
+                    <div class="p-box"><span class="p-name">PM2.5</span><div class="p-value"><span id="pm25">--</span> <small>µg/m³</small></div><div class="p-desc">Esperado 0 a 12 µg/m³</div></div>
+                    <div class="p-box"><span class="p-name">PM10</span><div class="p-value"><span id="pm10">--</span> <small>µg/m³</small></div><div class="p-desc">Esperado 0 a 54 µg/m³</div></div>
+                    <div class="p-box"><span class="p-name">CO₂</span><div class="p-value"><span id="co2">--</span> <small>ppm</small></div><div class="p-desc">Abaixo de 800 ppm</div></div>
+                    <div class="p-box"><span class="p-name">NO₂</span><div class="p-value"><span id="no2">--</span> <small>ppb</small></div><div class="p-desc">Seguro abaixo de 53</div></div>
+                    <div class="p-box"><span class="p-name">TVOC</span><div class="p-value"><span id="tvoc">--</span> <small>mg/m³</small></div><div class="p-desc">Abaixo de 0.3</div></div>
+                    <div class="p-box"><span class="p-name">Umidade</span><div class="p-value"><span id="humidity2">--</span> <small>%</small></div><div class="p-desc">Ideal 30% a 70%</div></div>
+                </div>
+            </div>
+            <div class="middle-column">
+                <div class="card legend-card">
+                    <h3>LEGENDA DA QUALIDADE DO AR</h3>
+                    <div class="legend-bar">
+                        <div class="l-boa">Boa</div>
+                        <div class="l-moderada">Mod.</div>
+                        <div class="l-ruim">Ruim</div>
+                        <div class="l-muitoruim">M. Ruim</div>
+                        <div class="l-pessima">Péss.</div>
+                    </div>
+                </div>
+                <div class="card recommendations-card">
+                    <h3>RECOMENDAÇÕES</h3>
+                    <div id="recommendations"><div class="rec-item"><span class="rec-icon">⏳</span><p>Carregando...</p></div></div>
+                </div>
+            </div>
+            <div class="card daily-card">
+                <h3>INFORMAÇÕES DO SENSOR</h3>
+                <ul class="daily-list">
+                    <li><span class="d-day">Sensor</span><span class="d-temp"><span id="sensor-serial">--</span></span></li>
+                    <li><span class="d-day">Sala</span><span class="d-temp"><span id="sensor-room">--</span></span></li>
+                    <li><span class="d-day">Escola</span><span class="d-temp"><span id="sensor-school">--</span></span></li>
+                    <li><span class="d-day">AQI</span><span class="d-temp"><strong><span id="sensor-aqi">--</span></strong></span></li>
+                    <li><span class="d-day">Status</span><span class="d-temp"><span id="sensor-status">--</span></span></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="footer-bar"><p>2026 | © GitNet. Todos os direitos reservados</p></div>
+    </footer>
+    <script>
+        const API_BASE = 'https://air-quality-monitor-production.up.railway.app';
+        const SENSOR_ID = 1;
+        const categoryMap = {
+            'GOOD':                { label: 'BOA', icon: '😊', rec: [['🚴','Desfrute de atividades ao ar livre'],['🪟','Abra as janelas para ar fresco']] },
+            'MODERATE':            { label: 'MODERADA', icon: '🙂', rec: [['😷','Grupos sensíveis devem limitar esforço'],['🪟','Ventile os ambientes']] },
+            'UNHEALTHY_SENSITIVE': { label: 'RUIM P/ SENSÍVEIS', icon: '😐', rec: [['🏠','Crianças devem evitar atividades externas'],['🌬️','Aumente a ventilação']] },
+            'UNHEALTHY':           { label: 'RUIM', icon: '😷', rec: [['⚠️','Evite atividades físicas'],['🚨','Considere evacuar']] },
+            'VERY_UNHEALTHY':      { label: 'MUITO RUIM', icon: '🤢', rec: [['🚨','Evacue imediatamente'],['📞','Contate a direção']] },
+            'HAZARDOUS':           { label: 'PERIGOSO', icon: '☠️', rec: [['🚨','EMERGÊNCIA — Evacuar!'],['📞','Acione as autoridades']] },
+        };
+        function setText(id, v) { const e = document.getElementById(id); if(e) e.textContent = (v !== null && v !== undefined) ? v : '--'; }
+        function formatDate(s) { return new Date(s).toLocaleDateString('pt-BR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
+        async function loadData() {
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/sensors/${SENSOR_ID}/readings/latest`);
+                if (!res.ok) throw new Error();
+                const d = await res.json();
+                const cat = categoryMap[d.aqi_category] || categoryMap['GOOD'];
+                setText('school-name', d.school_name);
+                setText('timestamp', formatDate(d.recorded_at));
+                setText('aqi-value', d.aqi_value);
+                setText('aqi-category', cat.label);
+                setText('room-name', d.room_name);
+                setText('temperature', d.temperature_c ? d.temperature_c+'°C' : '--°C');
+                setText('humidity', d.humidity_pct ? d.humidity_pct+'%' : '--%');
+                setText('co2-mini', d.co2_ppm ? d.co2_ppm+' ppm' : '-- ppm');
+                setText('aqi-icon', cat.icon);
+                setText('aqi-status', 'AR '+cat.label);
+                setText('pm25', d.pm25_ugm3); setText('pm10', d.pm10_ugm3);
+                setText('co2', d.co2_ppm); setText('no2', d.no2_ppb);
+                setText('tvoc', d.tvoc_mgm3); setText('humidity2', d.humidity_pct);
+                setText('sensor-serial', d.serial_number);
+                setText('sensor-room', d.room_name);
+                setText('sensor-school', d.school_name);
+                setText('sensor-aqi', d.aqi_value+' ('+cat.label+')');
+                setText('sensor-status', 'ONLINE ✅');
+                document.getElementById('recommendations').innerHTML = cat.rec.map(
+                    ([icon,text]) => `<div class="rec-item"><span class="rec-icon">${icon}</span><p>${text}</p></div>`
+                ).join('');
+            } catch(e) {
+                setText('school-name','Erro ao carregar');
+                setText('aqi-status','SEM CONEXÃO');
+                setText('aqi-icon','❌');
+            }
+        }
+        loadData();
+        setInterval(loadData, 60000);
+    </script>
+</body>
+</html>
